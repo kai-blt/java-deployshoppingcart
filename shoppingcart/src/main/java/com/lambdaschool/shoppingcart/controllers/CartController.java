@@ -7,6 +7,7 @@ import com.lambdaschool.shoppingcart.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,19 +32,23 @@ public class CartController
             HttpStatus.OK);
     }
 
-    @PutMapping(value = "/add/user/{userid}/product/{productid}",
+    @PutMapping(value = "/add/product/{productid}",
         produces = {"application/json"})
     public ResponseEntity<?> addToCart(
         @PathVariable
-            long userid,
-        @PathVariable
             long productid)
     {
-        CartItem addCartTtem = cartItemService.addToCart(userid,
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User u = userService.findByName(userName);
+
+
+
+        CartItem addCartTtem = cartItemService.addToCart(u.getUserid(),
             productid,
             "I am not working");
-        return new ResponseEntity<>(addCartTtem,
-            HttpStatus.OK);
+        System.out.println(addCartTtem);
+        return new ResponseEntity<>(addCartTtem, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/remove/user/{userid}/product/{productid}",
